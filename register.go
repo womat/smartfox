@@ -2,14 +2,7 @@ package smartfox
 
 import (
 	"encoding/binary"
-	"errors"
 	"fmt"
-)
-
-var (
-	ErrInvalidLength   = errors.New("smartfox: invalid result length")
-	ErrUnknownRegister = errors.New("smartfox: unknown register")
-	ErrInvalidResponse = errors.New("smartfox: invalid modbus response")
 )
 
 type register struct {

@@ -1,12 +1,26 @@
 package smartfox
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
-	"github.com/womat/tools"
-
 	"github.com/goburrow/modbus"
+	"github.com/womat/tools"
+)
+
+const (
+	On     = 1
+	Off    = 0
+	Auto   = 1
+	Manual = 2
+)
+
+var (
+	ErrInvalidLength   = errors.New("smartfox: invalid result length")
+	ErrUnknownRegister = errors.New("smartfox: unknown register")
+	ErrInvalidResponse = errors.New("smartfox: invalid modbus response")
+	ErrInvalidRelay    = errors.New("smartfox: invalid relay number")
 )
 
 // Client structure contains all Properties of a connection
@@ -71,6 +85,7 @@ func (c *Client) String() string {
 	return "modbus"
 }
 
+// "TCP 192.168.65.197:502 device:1 timeout:2 retries:3
 func (c *Client) Connect(connectionString string) (err error) {
 	tools.GetField(&c.connectionString, connectionString, "connection")
 	tools.GetField(&c.deviceID, connectionString, "device")
@@ -113,7 +128,7 @@ func (c *Client) GetPerformance() (p Performance, err error) {
 	if p.Info.ControlViaModbus, err = c.readInt("CONTROL_MODBUS"); err != nil {
 		return
 	}
-	if p.Info.Wlan.SwVersion, err = c.readInt("SW_VERSION"); err != nil {
+	if p.Info.Wlan.SwVersion, err = c.readInt("WLAN_VERSION"); err != nil {
 		return
 	}
 	if p.Info.Wlan.MacAddress, err = c.WLanMacAddress(); err != nil {
@@ -222,4 +237,9 @@ func (c *Client) GetPerformance() (p Performance, err error) {
 	}
 
 	return
+}
+
+// Version
+func (c *Client) Version() (i int, err error) {
+	return c.readInt("SW_VERSION")
 }

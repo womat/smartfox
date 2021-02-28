@@ -37,7 +37,7 @@ func TestRelay(t *testing.T) {
 		return
 	}
 
-	if _, err := r.SetControlOff(); err != nil {
+	if _, err := r.ControlOff(); err != nil {
 		t.Errorf("cann't switch to auto:%v", err)
 		return
 	}

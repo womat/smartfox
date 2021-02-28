@@ -2,11 +2,12 @@ package smartfox
 
 import (
 	"encoding/binary"
-	"errors"
 	"fmt"
 )
 
-type RelaySession struct {
+const maxRelayNr = 4
+
+type Relay struct {
 	client *Client
 	number int
 }
@@ -16,27 +17,16 @@ type RelayStatus struct {
 	Control uint16
 }
 
-const MaxRelayNr = 4
-
-const (
-	On     = 1
-	Off    = 0
-	Auto   = 1
-	Manual = 2
-)
-
-var ErrInvalidRelay = errors.New("smartfox: invalid relay number")
-
-func (c *Client) NewRelay(n int) (*RelaySession, error) {
-	if n > MaxRelayNr || n < 1 {
+func (c *Client) NewRelay(n int) (*Relay, error) {
+	if n > maxRelayNr || n < 1 {
 		return nil, ErrInvalidRelay
 	}
 
-	return &RelaySession{client: c, number: n}, nil
+	return &Relay{client: c, number: n}, nil
 }
 
 // relay mode 0=Off, 1=Auto, 2=Man. On
-func (r *RelaySession) Status() (rs RelayStatus, err error) {
+func (r *Relay) Status() (rs RelayStatus, err error) {
 	if rs.Control, err = r.client.getRelayControl(r.number); err != nil {
 		return rs, err
 	}
@@ -46,14 +36,14 @@ func (r *RelaySession) Status() (rs RelayStatus, err error) {
 	return rs, nil
 }
 
-func (r *RelaySession) SetControlOff() (RelayStatus, error) {
+func (r *Relay) ControlOff() (RelayStatus, error) {
 	if err := r.client.setRelayControl(r.number, Off); err != nil {
 		return RelayStatus{}, err
 	}
 	return r.Status()
 }
 
-func (r *RelaySession) SetControlOn() (RelayStatus, error) {
+func (r *Relay) ControlOn() (RelayStatus, error) {
 	if err := r.client.setRelayControl(r.number, On); err != nil {
 		return RelayStatus{}, err
 	}
@@ -62,7 +52,7 @@ func (r *RelaySession) SetControlOn() (RelayStatus, error) {
 }
 
 // Relay x Module
-func (r *RelaySession) On() (RelayStatus, error) {
+func (r *Relay) On() (RelayStatus, error) {
 	if err := r.client.setRelayMode(r.number, Manual); err != nil {
 		return RelayStatus{}, err
 	}
@@ -70,7 +60,7 @@ func (r *RelaySession) On() (RelayStatus, error) {
 	return r.Status()
 }
 
-func (r *RelaySession) Off() (RelayStatus, error) {
+func (r *Relay) Off() (RelayStatus, error) {
 	if err := r.client.setRelayMode(r.number, Off); err != nil {
 		return RelayStatus{}, err
 	}
@@ -78,7 +68,7 @@ func (r *RelaySession) Off() (RelayStatus, error) {
 	return r.Status()
 }
 
-func (r *RelaySession) Auto() (RelayStatus, error) {
+func (r *Relay) Auto() (RelayStatus, error) {
 	if err := r.client.setRelayMode(r.number, Auto); err != nil {
 		return RelayStatus{}, err
 	}
@@ -104,7 +94,7 @@ func (c *Client) setRelayMode(nr int, ctrl uint16) error {
 }
 
 func (c *Client) getRelay(nr int, register string) (uint16, error) {
-	if nr > MaxRelayNr || nr < 1 {
+	if nr > maxRelayNr || nr < 1 {
 		return 0, ErrInvalidRelay
 	}
 
@@ -117,7 +107,7 @@ func (c *Client) getRelay(nr int, register string) (uint16, error) {
 }
 
 func (c *Client) setRelay(nr int, ctrl uint16, register string) error {
-	if nr > MaxRelayNr || nr < 1 {
+	if nr > maxRelayNr || nr < 1 {
 		return ErrInvalidRelay
 	}
 
