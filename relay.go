@@ -1,5 +1,7 @@
 package smartfox
 
+// TODO: export the Client (Function or exported Variable), Client Function can accessed directly from Device and must not stored externally
+
 import (
 	"encoding/binary"
 	"fmt"

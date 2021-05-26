@@ -90,7 +90,6 @@ func (c *Client) Connect(connectionString string) (err error) {
 	tools.GetField(&c.connectionString, connectionString, "connection")
 	tools.GetField(&c.deviceID, connectionString, "device")
 	tools.GetField(&c.timeout, connectionString, "timeout")
-	//TODO: change to retry?
 	tools.GetField(&c.maxRetries, connectionString, "retries")
 
 	c.clientHandler = modbus.NewTCPClientHandler(c.connectionString)
