@@ -23,7 +23,7 @@ var (
 	ErrInvalidRelay    = errors.New("smartfox: invalid relay number")
 )
 
-// Client structure contains all Properties of a connection
+// Client structure contains all properties of a connection
 type Client struct {
 	connectionString string
 	timeout          time.Duration
@@ -85,12 +85,13 @@ func (c *Client) String() string {
 	return "modbus"
 }
 
-// "TCP 192.168.65.197:502 device:1 timeout:2 retries:3
+// Connect
+// example connection string "TCP 192.168.65.197:502 device:1 timeout:2 retries:3
 func (c *Client) Connect(connectionString string) (err error) {
-	tools.GetField(&c.connectionString, connectionString, "connection")
-	tools.GetField(&c.deviceID, connectionString, "device")
-	tools.GetField(&c.timeout, connectionString, "timeout")
-	tools.GetField(&c.maxRetries, connectionString, "retries")
+	_ = tools.GetField(&c.connectionString, connectionString, "connection")
+	_ = tools.GetField(&c.deviceID, connectionString, "device")
+	_ = tools.GetField(&c.timeout, connectionString, "timeout")
+	_ = tools.GetField(&c.maxRetries, connectionString, "retries")
 
 	c.clientHandler = modbus.NewTCPClientHandler(c.connectionString)
 	c.clientHandler.SlaveId = c.deviceID
@@ -116,7 +117,6 @@ func (c *Client) Close() error {
 	return c.clientHandler.Close()
 }
 
-// Session Performance
 func (c *Client) GetPerformance() (p Performance, err error) {
 	if p.Info.SwVersion, err = c.readInt("SW_VERSION"); err != nil {
 		return
@@ -238,7 +238,7 @@ func (c *Client) GetPerformance() (p Performance, err error) {
 	return
 }
 
-// Version
+// Version returns software version
 func (c *Client) Version() (i int, err error) {
 	return c.readInt("SW_VERSION")
 }

@@ -135,7 +135,6 @@ func (c *Client) readInt(key string) (int, error) {
 	return 0, ErrUnknownRegister
 }
 
-// MAC-Address LAN
 func (c *Client) LanMacAddress() (string, error) {
 	b, err := c.readHoldingRegisters("MAC_LAN")
 	if err != nil {
@@ -145,7 +144,6 @@ func (c *Client) LanMacAddress() (string, error) {
 	return fmt.Sprintf("%02X-%02X-%02X-%02X-%02X-%02X", b[0], b[1], b[2], b[3], b[4], b[5]), nil
 }
 
-// MAC-Address Wifi
 func (c *Client) WLanMacAddress() (string, error) {
 	b, err := c.readHoldingRegisters("MAC_WIFI")
 	if err != nil {
@@ -155,7 +153,6 @@ func (c *Client) WLanMacAddress() (string, error) {
 	return fmt.Sprintf("%02X-%02X-%02X-%02X-%02X-%02X", b[0], b[1], b[2], b[3], b[4], b[5]), nil
 }
 
-// Control AoutMode
 func (c *Client) getAoutMode() (byte, error) {
 	return c.readByte("AOUT_MODE")
 }
